@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .endpoint { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        button { background: #007cba; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 3px; }
+        button:hover { background: #005a8b; }
+        pre { background: #f4f4f4; padding: 10px; border-radius: 3px; overflow-x: auto; }
+        .flask { background: linear-gradient(135deg, #ff6b6b, #4ecdc4); color: white; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="flask">
+            <h1>{{ title }}</h1>
+            <p>{{ description }}</p>
+        </div>
+        
+        <div class="endpoint">
+            <h3>JSON API Endpoint</h3>
+            <p>Get data from MySQL database:</p>
+            <button onclick="fetchData()">GET /api/data/</button>
+            <pre id="data-result"></pre>
+        </div>
+        
+        <div class="endpoint">
+            <h3>Celery Task Endpoint</h3>
+            <p>Trigger a background task:</p>
+            <button onclick="triggerTask()">POST /api/task/</button>
+            <pre id="task-result"></pre>
+        </div>
+    </div>
+    
+    <script>
+        async function fetchData() {
+            try {
+                const response = await fetch('/api/data/');
+                const data = await response.json();
+                document.getElementById('data-result').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('data-result').textContent = 'Error: ' + error.message;
+            }
+        }
+        
+        async function triggerTask() {
+            try {
+                const response = await fetch('/api/task/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ task_name: 'flask_task_' + Date.now() })
+                });
+                const data = await response.json();
+                document.getElementById('task-result').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('task-result').textContent = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
